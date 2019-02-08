@@ -10,14 +10,14 @@ from selenium.webdriver.support import expected_conditions as EC
 # Use Chrome browser
 driver = webdriver.Chrome()
 # Web pages to scrape
-driver.get('https://shop.lululemon.com/p/women-pants/Align-Pant-2/_/prod2020012?color=35552')
+product_url = 'https://shop.lululemon.com/p/women-pants/Align-Pant-2/_/prod2020012?color=35552'
+driver.get(product_url)
 
 # Writing CSV file
 csv_file = open('lululemon_reviews.csv', 'w', encoding= 'utf-8')
 writer = csv.writer(csv_file)
 #writer.writerow()
 
-index = 1
 
 
 #product_name = product_info.find_element_by_xpath('.//h1[@class="pdp-title"]').text
@@ -35,24 +35,33 @@ review_button.click()
 
 
 product_name = driver.find_element_by_xpath('.//h1[@class="pdp-title"]/div').text.replace("\n", " ")
-print(product_name)
-# try:
-# 	product_list_price = driver.find_element_by_xpath('.//span[@class="list-price"]').text
-# except Exception as e:
-# 	product_list_price = e
-# print(product_list_price)
 
-# try:
-# 	product_sale_price = driver.find_element_by_xpath('.//span[@class="sale-price"]').text
-# except Exception as e:
-# 	product_sale_price = e
-# print(product_sale_price)
+try:
+	product_sale_price = driver.find_element_by_xpath('.//span[@class="sale-price"]').text
+except Exception as e:
+	product_sale_price = ""
+
+try:
+	product_list_price = driver.find_element_by_xpath('.//span[@class="list-price"]').text
+except Exception as e:
+	product_list_price = ""
+
+try:
+	product_avg_rating = driver.find_element_by_xpath('.//div[@id="BVRRRatingOverall_"]/div[@class="BVRRRatingNormalImage"]/img').get_attribute("title")
+except Exception as e:
+	product_avg_rating = e
 
 
-
-while index <=1:
+index = 1
+while index <=3:
+#while True:
 	try:
-		print("Scraping page number " + str(index))
+		try:
+			page_number = driver.find_element_by_xpath('//span[@class="BVRRPageLink BVRRPageNumber BVRRSelectedPageNumber"]').text
+		except Exception as e:
+			page_number = e
+
+		print("Scraping page number " + str(page_number))
 		index = index + 1
 
 
@@ -65,6 +74,7 @@ while index <=1:
 
 		# using time.sleep(2) instead of WebDriverWait/EC
 		reviews=driver.find_elements_by_xpath('//span[@itemprop="review"]')
+
 
 		for review in reviews:
 
@@ -80,7 +90,7 @@ while index <=1:
 				content = ""
 
 			try:
-				rating = review.find_element_by_xpath('.//div[@id="BVRRRatingOverall_Review_Display"]/div[2]/img').get_attribute("title")
+				rating = review.find_element_by_xpath('.//div[@id="BVRRRatingOverall_Review_Display"]/@class="BVRRRatingNormalImage"/img').get_attribute("title")
 			except Exception as e:
 				rating = ""
 
@@ -138,17 +148,12 @@ while index <=1:
 			except Exception as e:
 				helpful_no = ""
 
+
+			LL_response_dict = {}
 			try:
 				LL_responses = review.find_elements_by_xpath('.//div[@class="BVRRReviewClientResponseContainer"]')
 				
 				for LL_response in LL_responses:
-					LL_response_dict = {}
-
-					#try:
-					#	LL_response_title = LL_response.find_element_by_xpath('.//span[@class="BVRRReviewClientResponseTitle"]').text
-					#except Exception as e:
-					#	LL_response_title = e
-
 					try:
 						LL_response_content = LL_response.find_element_by_xpath('.//div[@class="BVRRReviewClientResponseText"]').text
 					except Exception as e:
@@ -159,17 +164,19 @@ while index <=1:
 					except Exception as e:
 						LL_response_date = e
 
-
-					#LL_response_dict['LL_response_title'] = LL_response_title
 					LL_response_dict['LL_response_content'] = LL_response_content
 					LL_response_dict['LL_response_date'] = LL_response_date
-					print(LL_response_dict)
+					#print(LL_response_dict)
 
 			except Exception as e:
 				LL_responses = ""
 
-			#review_dict['product_name'] = product_name
-			#review_dict['product_price'] = product_price
+			review_dict['product_name'] = product_name
+			review_dict['product_url'] = product_url
+			review_dict['product_list_price'] = product_list_price
+			review_dict['product_sale_price'] = product_sale_price
+			review_dict['product_avg_rating'] = product_avg_rating
+			review_dict['page_number'] = page_number
 			review_dict['title'] = title
 			review_dict['content'] = content
 			review_dict['rating'] = rating
@@ -202,10 +209,12 @@ while index <=1:
 
 
 	except Exception as e:
-		print(e)
+		print("no more pages to scrape")
 		driver.close()
 		csv_file.close() # close file that you opened
 		break
+
+print("done!")
 
 
 
