@@ -21,13 +21,10 @@ with open("ll_urls.csv", "r") as ll_url_file:
 	product_urls = list(ll_reader)
 
 product_urls = [product_url[0] for product_url in product_urls]
-product_urls = product_urls[1:21]
+product_urls = product_urls[21:31]
 
 
 # Writing CSV file
-product_file = open('lululemon_product_info.csv', 'r+', encoding= 'utf-8')
-product_writer = csv.writer(product_file)
-#writer.writerow()
 
 
 # testing in a few sites with a few pages of reviews
@@ -37,7 +34,7 @@ product_writer = csv.writer(product_file)
 #['https://shop.lululemon.com/p/women-pants/Zoned-In-Tight-27/_/prod9080164?color=0001']]
 
 
-
+ind=21
 # Web pages to scrape
 for product_url in product_urls:
 	product_url = product_url
@@ -58,10 +55,11 @@ for product_url in product_urls:
 
 
 	# csv file for each product
-	filename = "./reviews/"+re.sub('[^a-zA-Z0-9]', '', product_name)+"_lululemon_review.csv"
+	filename = "./reviews/"+str(ind)+"."+re.sub('[^a-zA-Z0-9]', '', product_name)+"_lululemon_review.csv"
 	review_file = open(filename, 'w', encoding= 'utf-8')
 	review_writer = csv.writer(review_file)
-
+	ind+=1
+	
 	try:
 		product_sale_price = driver.find_element_by_xpath('.//span[@class="sale-price"]').text
 	except Exception as e:
@@ -81,13 +79,6 @@ for product_url in product_urls:
 		product_avg_rating = driver.find_element_by_xpath('.//div[@id="BVRRRatingOverall_"]/div[@class="BVRRRatingNormalImage"]/img').get_attribute("title")
 	except Exception as e:
 		product_avg_rating = ""
-	product_dict['product_name'] = product_name
-	product_dict['product_url'] = product_url
-	product_dict['product_list_price'] = product_list_price
-	product_dict['product_sale_price'] = product_sale_price
-	product_dict['product_colors'] = product_colors
-	product_dict['product_avg_rating'] = product_avg_rating
-	product_writer.writerow(product_dict.values())
 
 	index = 1
 	#while index <=1:
@@ -241,12 +232,10 @@ for product_url in product_urls:
 			print("\nDone scraping {}\n".format(product_name))
 			driver.close()
 			review_file.close() # close file that you opened
-			product_file.close()
 			break
 	driver.close()
 
 review_file.close()
-product_file.close()
 print("\nDone scraping\n")
 
 
