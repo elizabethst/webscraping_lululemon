@@ -12,6 +12,7 @@ import numpy as np
 #import re
 import ast
 import os
+import datetime as dt
 
 
 
@@ -22,7 +23,7 @@ import os
 
 ###############################################################################
 # Reading in product information
-product_colnames = ["Product Name", "URL", "Current Price", "List Price", "Colors", "Average Rating"]
+product_colnames = ["Product Name", "URL", "List Price", "Sale Price", "Colors", "Average Rating"]
 product_info = pd.read_csv('./reviews/lululemon_product_info.csv', names = product_colnames)
 
 
@@ -57,9 +58,13 @@ reviews = reviews.join(pd.DataFrame(reviews['lululemon Response'].to_dict()).T)
 reviews['LL_response_date']
 reviews.rename(columns={'LL_response_content':'lululemon response', 'LL_response_date':'lululemon response date'}, inplace=True)
 
-
 # Dropping URL and lululemon Response
 reviews = reviews.drop(columns = ["URL", "lululemon Response"])
+
+# https://stackabuse.com/converting-strings-to-datetime-in-python/
+# Converting dates
+reviews['Date'] = reviews['Date'].map(lambda x: dt.datetime.strptime(x, '%Y-%m-%d').date())
+reviews['lululemon response date'] = reviews['lululemon response date'].map(lambda x: dt.datetime.strptime(x, '%B %d, %Y').date(), na_action = 'ignore')
 
 # Removing "out of 5" and converting to float from columns containing ratings
 rating_cols = [col for col in reviews.columns if "Rating" in col]
@@ -70,9 +75,6 @@ del rating_cols
 # Cleaning up Location column.
 reviews['Location'] = reviews['Location'].str.replace(", USA", "")
 reviews['Location'] = reviews['Location'].str.replace("\d", "", regex = True)
-
-#reviews['lululemon response']
-
 
 
 
@@ -114,6 +116,10 @@ for file in filenames:
         tmp.rename(columns={'LL_response_content':'lululemon response', 'LL_response_date':'lululemon response date'}, inplace=True)
         # Dropping URL and lululemon Response
         tmp = tmp.drop(columns = ["URL", "lululemon Response"])
+        # Converting dates
+        tmp['Date'] = tmp['Date'].map(lambda x: dt.datetime.strptime(x, '%Y-%m-%d').date())
+        tmp['lululemon response date'] = tmp['lululemon response date'].map(lambda x: dt.datetime.strptime(x, '%B %d, %Y').date(), na_action = 'ignore')
+
         # Removing "out of 5" and converting to float from columns containing ratings
         rating_cols = [col for col in tmp.columns if "Rating" in col]
         for col in rating_cols:
@@ -128,27 +134,10 @@ for file in filenames:
         print(e)
         continue
 
-reviews
 
+del (file, filenames, tmp, col, product_colnames, review_colnames)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#reviews.to_csv('./reviews/merged_reviews.csv')
 
 
 
