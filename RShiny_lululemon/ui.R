@@ -34,12 +34,13 @@ shinyUI(fluidPage(#theme = shinytheme("simplex"),
                                                     choices = product_choices),
                                      selectizeInput(inputId = "product_comparison2",
                                                     label = "Product 2",
-                                                    choices = product_choices),
-                                     radioButtons(inputId = "radio_comparison",
-                                                  label = "",
-                                                  choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
-                                                  selected = 1,
-                                                  inline = TRUE)
+                                                    choices = product_choices)
+                                     # ,
+                                     # radioButtons(inputId = "radio_comparison",
+                                     #              label = "",
+                                     #              choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
+                                     #              selected = 1,
+                                     #              inline = TRUE)
                                    ),
                                    mainPanel(
                                      column(6, 
@@ -67,12 +68,13 @@ shinyUI(fluidPage(#theme = shinytheme("simplex"),
                                            choices = athletic_type_choices),
                             selectizeInput(inputId = "athletic_type2",
                                            label = "Athletic Type 2",
-                                           choices = athletic_type_choices),
-                            radioButtons(inputId = "athletic_type_comparison",
-                                         label = "",
-                                         choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
-                                         selected = 1,
-                                         inline = TRUE)
+                                           choices = athletic_type_choices)
+                            # ,
+                            # radioButtons(inputId = "athletic_type_comparison",
+                            #              label = "",
+                            #              choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
+                            #              selected = 1,
+                            #              inline = TRUE)
                             ),
                             mainPanel(
                               column(6, 
@@ -98,12 +100,13 @@ shinyUI(fluidPage(#theme = shinytheme("simplex"),
                                                   choices = age_range_choices),
                                    selectizeInput(inputId = "age_range2",
                                                   label = "Age Range 2",
-                                                  choices = age_range_choices),
-                                   radioButtons(inputId = "radio_comparison",
-                                                label = "",
-                                                choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
-                                                selected = 1,
-                                                inline = TRUE)
+                                                  choices = age_range_choices)
+                                   # ,
+                                   # radioButtons(inputId = "radio_comparison",
+                                   #              label = "",
+                                   #              choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
+                                   #              selected = 1,
+                                   #              inline = TRUE)
                                  ),
                                  mainPanel(
                                    column(6, 
@@ -129,12 +132,13 @@ shinyUI(fluidPage(#theme = shinytheme("simplex"),
                                                   choices = body_type_choices),
                                    selectizeInput(inputId = "body_type2",
                                                   label = "Body Type 2",
-                                                  choices = body_type_choices),
-                                   radioButtons(inputId = "radio_comparison",
-                                                label = "",
-                                                choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
-                                                selected = 1,
-                                                inline = TRUE)
+                                                  choices = body_type_choices)
+                                   # ,
+                                   # radioButtons(inputId = "radio_comparison",
+                                   #              label = "",
+                                   #              choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
+                                   #              selected = 1,
+                                   #              inline = TRUE)
                                  ),
                                  mainPanel(
                                    column(6, 
@@ -161,12 +165,13 @@ shinyUI(fluidPage(#theme = shinytheme("simplex"),
                                                   choices = fit_choices),
                                    selectizeInput(inputId = "fit2",
                                                   label = "Fit 2",
-                                                  choices = fit_choices),
-                                   radioButtons(inputId = "radio_comparison",
-                                                label = "",
-                                                choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
-                                                selected = 1,
-                                                inline = TRUE)
+                                                  choices = fit_choices)
+                                   # ,
+                                   # radioButtons(inputId = "radio_comparison",
+                                   #              label = "",
+                                   #              choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
+                                   #              selected = 1,
+                                   #              inline = TRUE)
                                  ),
                                  mainPanel(
                                    column(6, 
@@ -195,12 +200,13 @@ shinyUI(fluidPage(#theme = shinytheme("simplex"),
                                          choices = product_choices),
                           selectizeInput(inputId = "sa_product2",
                                          label = "Product 2",
-                                         choices = product_choices),
-                          radioButtons(inputId = "radio_comparison",
-                                       label = "",
-                                       choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
-                                       selected = 1,
-                                       inline = TRUE)
+                                         choices = product_choices)
+                          # ,
+                          # radioButtons(inputId = "radio_comparison",
+                          #              label = "",
+                          #              choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
+                          #              selected = 1,
+                          #              inline = TRUE)
                         ),
                         mainPanel(
                           column(6,
