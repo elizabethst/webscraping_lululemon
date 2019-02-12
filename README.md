@@ -1,0 +1,3 @@
+My project involved scraping the lululemon athletica website for product information and reviews. Specifically, I used Selenium to scrape product information for [women's tights](https://shop.lululemon.com/c/women-pants/_/N-1z109yvZ7yh), and then subsequently scraped reviews and user profile information for each product.
+
+With this scraped data, I created a multi-purpose web application, which can be used to parse through multiple components such as product ratings, reviews, customer profiles, and sentiment analysis.

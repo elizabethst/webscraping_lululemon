@@ -1,0 +1,13 @@
+name: when_life_gives_you_lululemons
+title: when_life_gives_you_lululemons
+username:
+account: stellakim
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 709563
+bundleId: 1870786
+url: https://stellakim.shinyapps.io/when_life_gives_you_lululemons/
+when: 1549946249.05667
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: data/merged_reviews.csv|www/.DS_Store
