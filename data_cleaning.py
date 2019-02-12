@@ -9,7 +9,7 @@ Created on Sat Feb  9 13:23:13 2019
 import pandas as pd
 import numpy as np
 #import csv
-#import re
+import re
 import ast
 import os
 import datetime as dt
@@ -52,6 +52,9 @@ del (missing_reviews, align_missing)
 reviews = align_reviews
 del align_reviews
 
+#reviews.dtypes
+
+
 # Splitting lululemon Response into content and date
 reviews["lululemon Response"] = reviews["lululemon Response"].map(lambda dict: ast.literal_eval(dict))
 reviews = reviews.join(pd.DataFrame(reviews['lululemon Response'].to_dict()).T)
@@ -70,11 +73,20 @@ reviews['lululemon response date'] = reviews['lululemon response date'].map(lamb
 rating_cols = [col for col in reviews.columns if "Rating" in col]
 for col in rating_cols:
     reviews[col] = reviews[col].map(lambda x: float(x.replace(" out of 5", "")))
-del rating_cols
+del (col, rating_cols)
 
 # Cleaning up Location column.
 reviews['Location'] = reviews['Location'].str.replace(", USA", "")
 reviews['Location'] = reviews['Location'].str.replace("\d", "", regex = True)
+
+# Cleaning up content
+reviews['Content'] = reviews['Content'].str.replace("This guest did not provide a text review.", "")
+
+# Filling in nan with "", for sentiment analysis.
+#cols_to_fill = ['Location', 'Athletic Type', ]
+#reviews['Location'] = reviews['Location'].fillna('')
+
+#reviews['Location'].fillna('')
 
 
 
@@ -128,8 +140,10 @@ for file in filenames:
         # Cleaning up Location column.
         tmp['Location'] = tmp['Location'].str.replace(", USA", "")
         tmp['Location'] = tmp['Location'].str.replace("\d", "", regex = True)
+        tmp['Content'] = tmp['Content'].str.replace("This guest did not provide a text review.", "")
         reviews = pd.concat([reviews, tmp], axis = 0)
         print("done with " + file)
+
     except Exception as e:
         print(e)
         continue
@@ -137,7 +151,7 @@ for file in filenames:
 
 del (file, filenames, tmp, col, product_colnames, review_colnames)
 
-#reviews.to_csv('./reviews/merged_reviews.csv')
+#reviews.to_csv('./reviews/merged_reviews.csv', index = False)
 
 
 
