@@ -1,18 +1,18 @@
 #https://github.com/NLMichaud/WeeklyCDCPlot/blob/master/ui.R
 
-shinyUI(fluidPage(#theme = shinytheme("simplex"),
-  shinythemes::themeSelector(),
-  navbarPage(strong("When Life Gives You (lulu)lemons"),
-             tabPanel("lululemon Overview/brand analysis",
+shinyUI(fluidPage(theme = shinytheme("journal"),
+#  shinythemes::themeSelector(),
+  navbarPage("When Life Gives You (lulu)lemons",
+             tabPanel("Overview",
                       sidebarLayout(
                         sidebarPanel(
                           dateRangeInput(inputId = "date_range",
                                          label = "Date Range",
                                          start = min(lululemon_reviews$Date),
                                          end = max(lululemon_reviews$Date)),
-                          radioButtons(inputId = "radio_comparison",
+                          radioButtons(inputId = "radio_overview",
                                        label = "",
-                                       choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
+                                       choices = list("Absolute" = 1, "Relative" = 2),
                                        selected = 1,
                                        inline = TRUE)
                         ),
@@ -26,6 +26,7 @@ shinyUI(fluidPage(#theme = shinytheme("simplex"),
                         )
                       ),
              navbarMenu("Product Comparisons",
+#                        tabPanel(tagList(icon("fas fa-star"), "Rating breakdown"),
                         tabPanel("Rating breakdown",
                                  sidebarLayout(
                                    sidebarPanel(
@@ -34,13 +35,12 @@ shinyUI(fluidPage(#theme = shinytheme("simplex"),
                                                     choices = product_choices),
                                      selectizeInput(inputId = "product_comparison2",
                                                     label = "Product 2",
-                                                    choices = product_choices)
-                                     # ,
-                                     # radioButtons(inputId = "radio_comparison",
-                                     #              label = "",
-                                     #              choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
-                                     #              selected = 1,
-                                     #              inline = TRUE)
+                                                    choices = product_choices,
+                                                    selected = "Fast & Free 7/8 Tight II Nulux 25\""),
+                                     radioButtons(inputId = "radio_comparison",
+                                                  label = "",
+                                                  choices = list("Overview" = 1, "Athletic Type" = 2, "Age Range" = 3, "Body Type" = 4, "Fit" = 5),
+                                                  selected = 1)
                                    ),
                                    mainPanel(
                                      column(6, 
@@ -57,9 +57,69 @@ shinyUI(fluidPage(#theme = shinytheme("simplex"),
                                             plotlyOutput("product_comparison2_ratings_plot"))
                                    )
                                  )
-                        )
+                        ),
+                        tabPanel("Sentiment Analysis",
+                                 sidebarLayout(
+                                   sidebarPanel(
+                                     selectizeInput(inputId = "sa_product1",
+                                                    label = "Product 1",
+                                                    choices = product_choices),
+                                     selectizeInput(inputId = "sa_product2",
+                                                    label = "Product 2",
+                                                    choices = product_choices,
+                                                    selected = "Fast & Free 7/8 Tight II Nulux 25\""),
+                                     radioButtons(inputId="sa_radio", label = "",
+                                                  choices = list("Polarity" = 1, "Subjectivity" = 2),
+                                                  selected = 1,
+                                                  inline = TRUE)
+                                   ),
+                                   mainPanel(
+                                     column(6,
+                                            textOutput("sa_product1_subtitle"),
+                                            #valueBoxOutput("avg_polarity_product1", width = 6),
+                                            br(), br(),
+                                            plotlyOutput("sa_review_product1")),
+                                     column(6,
+                                            textOutput("sa_product2_subtitle"),
+                                            #valueBoxOutput("avg_polarity_product2", width = 6),
+                                            br(), br(),
+                                            plotlyOutput("sa_review_product2"))
+                                   )
+                                 )),
+                        tabPanel("Word Cloud",
+                                 sidebarLayout(
+                                   sidebarPanel(
+                                     selectizeInput(inputId = "wc_product1",
+                                                    label = "Product 1",
+                                                    choices = product_choices),
+                                     selectizeInput(inputId = "wc_product2",
+                                                    label = "Product 2",
+                                                    choices = product_choices,
+                                                    selected = "Fast & Free 7/8 Tight II Nulux 25\""),
+                                     br(),
+                                     sliderInput("freq",
+                                                 "Minimum Frequency:",
+                                                 min = 1,  max = 500, value = 150),
+                                     sliderInput("max",
+                                                 "Maximum Number of Words:",
+                                                 min = 1,  max = 300,  value = 100)
+                                     
+                                   ),
+                                   mainPanel(
+                                     column(6,
+                                            textOutput("wordcloud_product1_subtitle"),
+                                            plotOutput("wordcloud_product1"),
+                                            plotlyOutput("wc_hist1"),
+                                            dataTableOutput("wordcloud_table1")),
+                                     column(6,
+                                            textOutput("wordcloud_product2_subtitle"),
+                                            plotOutput("wordcloud_product2"),
+                                            plotlyOutput("wc_hist2"),
+                                            dataTableOutput("wordcloud_table2"))
+                                   )
+                                 ))
              ),
-             navbarMenu("Customer profile",
+             navbarMenu("Customer Profile",
                       tabPanel("Athletic Type",
                         sidebarLayout(
                           sidebarPanel(
@@ -68,13 +128,8 @@ shinyUI(fluidPage(#theme = shinytheme("simplex"),
                                            choices = athletic_type_choices),
                             selectizeInput(inputId = "athletic_type2",
                                            label = "Athletic Type 2",
-                                           choices = athletic_type_choices)
-                            # ,
-                            # radioButtons(inputId = "athletic_type_comparison",
-                            #              label = "",
-                            #              choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
-                            #              selected = 1,
-                            #              inline = TRUE)
+                                           choices = athletic_type_choices,
+                                           selected = "N/A")
                             ),
                             mainPanel(
                               column(6, 
@@ -100,13 +155,8 @@ shinyUI(fluidPage(#theme = shinytheme("simplex"),
                                                   choices = age_range_choices),
                                    selectizeInput(inputId = "age_range2",
                                                   label = "Age Range 2",
-                                                  choices = age_range_choices)
-                                   # ,
-                                   # radioButtons(inputId = "radio_comparison",
-                                   #              label = "",
-                                   #              choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
-                                   #              selected = 1,
-                                   #              inline = TRUE)
+                                                  choices = age_range_choices,
+                                                  selected = "N/A")
                                  ),
                                  mainPanel(
                                    column(6, 
@@ -132,13 +182,8 @@ shinyUI(fluidPage(#theme = shinytheme("simplex"),
                                                   choices = body_type_choices),
                                    selectizeInput(inputId = "body_type2",
                                                   label = "Body Type 2",
-                                                  choices = body_type_choices)
-                                   # ,
-                                   # radioButtons(inputId = "radio_comparison",
-                                   #              label = "",
-                                   #              choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
-                                   #              selected = 1,
-                                   #              inline = TRUE)
+                                                  choices = body_type_choices,
+                                                  selected = "N/A")
                                  ),
                                  mainPanel(
                                    column(6, 
@@ -165,7 +210,8 @@ shinyUI(fluidPage(#theme = shinytheme("simplex"),
                                                   choices = fit_choices),
                                    selectizeInput(inputId = "fit2",
                                                   label = "Fit 2",
-                                                  choices = fit_choices)
+                                                  choices = fit_choices,
+                                                  selected = "N/A")
                                    # ,
                                    # radioButtons(inputId = "radio_comparison",
                                    #              label = "",
@@ -192,60 +238,51 @@ shinyUI(fluidPage(#theme = shinytheme("simplex"),
                       )
                       
                       ),
-             tabPanel("Sentiment Analysis",
+             tabPanel("Response Rate",
                       sidebarLayout(
                         sidebarPanel(
-                          selectizeInput(inputId = "sa_product1",
+                          selectizeInput(inputId = "response1",
                                          label = "Product 1",
                                          choices = product_choices),
-                          selectizeInput(inputId = "sa_product2",
+                          selectizeInput(inputId = "response2",
                                          label = "Product 2",
-                                         choices = product_choices)
-                          # ,
-                          # radioButtons(inputId = "radio_comparison",
-                          #              label = "",
-                          #              choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
-                          #              selected = 1,
-                          #              inline = TRUE)
+                                         choices = product_choices,
+                                         selected = "Fast & Free 7/8 Tight II Nulux 25\""),
+                          radioButtons(inputId = "radio_response",
+                                       label = "",
+                                       choices = list("Absolute" = 1, "Relative" = 2),
+                                       selected = 1,
+                                       inline = TRUE)
                         ),
                         mainPanel(
                           column(6,
-                                 textOutput("polarity_product1_subtitle"),
-                                 #valueBoxOutput("avg_polarity_product1", width = 6),
+                                 valueBoxOutput("rr_total_reviews1", width = 6),
+                                 valueBoxOutput("number_responses1", width = 6),
+                                 valueBoxOutput("response_rate1", width = 6),
+                                 valueBoxOutput("avg_response_time1", width = 6),
                                  br(), br(), br(), br(), br(), br(),
-                                 plotlyOutput("polarity_review_product1")),
+                                 br(), br(), br(), br(), br(), br(),
+                                 plotlyOutput("response_plot1")),
                           column(6,
-                                 textOutput("polarity_product2_subtitle"),
-                                 #valueBoxOutput("avg_polarity_product2", width = 6),
+                                 valueBoxOutput("rr_total_reviews2", width = 6),
+                                 valueBoxOutput("number_responses2", width = 6),
+                                 valueBoxOutput("response_rate2", width = 6),
+                                 valueBoxOutput("avg_response_time2", width = 6),
                                  br(), br(), br(), br(), br(), br(),
-                                 plotlyOutput("polarity_review_product2"))
+                                 br(), br(), br(), br(), br(), br(),
+                                 plotlyOutput("response_plot2"))
                         )
                       )),
-             tabPanel("Response Rate / Customer Service"),
-             tabPanel("References"),
-             tabPanel("About Me"),
+             tabPanel("References",
+                      htmlOutput("lulu_link")
+                      ),
+             tabPanel("About Me",
+                      sidebarLayout(
+                        sidebarPanel(
+                          #img(src="Kim, Stella_180508_06_1200x800.jpg")
+                        ),
+                        mainPanel()
+                      )),
              responsive = TRUE)
-  
-  
-  
-  
-  # # Sidebar with a slider input for number of bins 
-  # sidebarLayout(
-  #   sidebarPanel(
-  #      sliderInput("bins",
-  #                  "Number of bins:",
-  #                  min = 1,
-  #                  max = 50,
-  #                  value = 30)
-  #   ),
-  #   
-  #   # Show a plot of the generated distribution
-  #   mainPanel(
-  #      plotOutput("distPlot")
-  #   )
-  # )
-  
-  
-  
   
 ))

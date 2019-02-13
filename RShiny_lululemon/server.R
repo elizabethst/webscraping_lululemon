@@ -6,24 +6,39 @@ shinyServer(function(input, output) {
   output$overview_avg_rating = renderValueBox({
     valueBox(subtitle = "Average Rating",
              value = round(lululemon_reviews %>% select(., `Rating`) %>% pull %>% mean, digits = 2),
-             icon = icon("dumbbell"))
+             icon = icon("fas fa-star"))
   })
   output$overview_total_reviews = renderValueBox({
     valueBox(subtitle = "Total Number of Reviews",
-             value = round(lululemon_reviews %>% select(., `Rating`) %>% pull %>% length),
+             value = prettyNum(round(lululemon_reviews %>% select(., `Rating`) %>% pull %>% length), big.mark = ","),
              icon = icon("dumbbell"))
   })
   output$overview_ratings_plot = renderPlotly({
-    ggplotly(ggplot(lululemon_reviews, aes(x = `Rating`)) +
-               xlab("Rating (out of 5)") + ylab("Number of reviews") +
-               geom_bar(aes(fill = factor(Rating))) + scale_fill_brewer(palette = "Reds") +
-               theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                     panel.background = element_blank(), axis.line = element_line(colour = "black"),
-                     legend.position = "none"))
+    lulu_date = lululemon_reviews %>% filter(., Date >= input$date_range[1] & Date <= input$date_range[2])
+    gg = ggplot(lulu_date, aes(x = `Rating`))
+    if (input$radio_overview == 1) {
+      ggplotly(gg +
+                 xlab("Rating (out of 5)") + ylab("Number of reviews") +
+                 geom_bar(aes(fill = factor(year(Date)))) + scale_fill_brewer(palette = "Reds") +
+                 theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                       panel.background = element_blank(), axis.line = element_line(colour = "black"),
+                       legend.position = "none"))
+    } else if (input$radio_overview == 2) {
+      ggplotly(gg +
+                 xlab("Rating (out of 5)") + ylab("Proportion of reviews") +
+                 geom_bar(aes(fill = factor(year(Date))), position = "fill") + scale_fill_brewer(palette = "Reds") +
+                 theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                       panel.background = element_blank(), axis.line = element_line(colour = "black"),
+                       legend.position = "none"))
+    }
+    
   })
   
+
   
   
+  ### Product Comparisons
+  ## Ratings
   ll_product1 = reactive({
     lululemon_reviews %>% filter(., `Product Name` == input$product_comparison1)
   })
@@ -32,56 +47,182 @@ shinyServer(function(input, output) {
   })
 
   output$product_comparison1_subtitle = renderText({
-    print(input$product_comparison1)
+    print(paste("Ratings for ", input$product_comparison1))
   })
   output$avg_rating_product_comparison1 = renderValueBox({
     valueBox(subtitle = "Average Rating",
              value = round(ll_product1() %>% select(., `Rating`) %>% pull %>% mean, digits = 2),
-             icon = icon("dumbbell"))
+             icon = icon("fas fa-star"))
   })
   output$total_reviews_product_comparison1 = renderValueBox({
     valueBox(subtitle = "Total Number of Reviews",
-             value = round(ll_product1() %>% select(., `Rating`) %>% pull %>% length),
+             value = prettyNum(ll_product1() %>% select(., `Rating`) %>% pull %>% length, big.mark = ","),
              icon = icon("dumbbell"))
   })
   output$product_comparison1_ratings_plot = renderPlotly({
-    ggplotly(ggplot(ll_product1(), aes(x = `Rating`)) +
-               xlab("Rating (out of 5)") + ylab("Number of reviews") +
-               geom_bar(aes(fill = factor(Rating))) + scale_fill_brewer(palette = "Reds") +
-               theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                     panel.background = element_blank(), axis.line = element_line(colour = "black"),
-                     legend.position = "none"))
+    gg = ggplot(ll_product1(), aes(x = `Rating`)) +
+      xlab("Rating (out of 5)") + ylab("Number of reviews") + scale_fill_brewer(palette = "Reds") +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            panel.background = element_blank(), axis.line = element_line(colour = "black"),
+            legend.position = "none")
+    if (input$radio_comparison == 1) {
+      ggplotly(gg + geom_bar(aes(fill = factor(`Rating`))))
+    } else if (input$radio_comparison == 2) {
+      ggplotly(gg + geom_bar(aes(fill = factor(`Athletic Type`))))
+    } else if (input$radio_comparison == 3) {
+      ggplotly(gg + geom_bar(aes(fill = factor(`Age Range`))))
+    } else if (input$radio_comparison == 4) {
+      ggplotly(gg + geom_bar(aes(fill = factor(`Body Type`))))
+    } else if (input$radio_comparison == 5) {
+      ggplotly(gg + geom_bar(aes(fill = factor(`Fit`))))
+    }
   })
   
   output$product_comparison2_subtitle = renderText({
-    print(input$product_comparison2)
+    print(paste("Ratings for ", input$product_comparison2))
   })
   output$avg_rating_product_comparison2 = renderValueBox({
     valueBox(subtitle = "Average Rating",
              value = round(ll_product2() %>% select(., `Rating`) %>% pull %>% mean, digits = 2),
-             icon = icon("dumbbell"))
+             icon = icon("fas fa-star"))
   })
   output$total_reviews_product_comparison2 = renderValueBox({
     valueBox(subtitle = "Total Number of Reviews",
-             value = round(ll_product2() %>% select(., `Rating`) %>% pull %>% length),
+             value = prettyNum(ll_product2() %>% select(., `Rating`) %>% pull %>% length, big.mark = ","),
              icon = icon("dumbbell"))
   })
   
   output$product_comparison2_ratings_plot = renderPlotly({
-    ggplotly(ggplot(ll_product2(), aes(x = `Rating`)) + 
-               xlab("Rating (out of 5)") + ylab("Number of reviews") + 
-               geom_bar(aes(fill = factor(Rating))) + scale_fill_brewer(palette = "Reds") +
-               theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                     panel.background = element_blank(), axis.line = element_line(colour = "black"),
-                     legend.position = "none"))
-  })  
+    gg = ggplot(ll_product2(), aes(x = `Rating`)) +
+      xlab("Rating (out of 5)") + ylab("Number of reviews") + scale_fill_brewer(palette = "Reds") +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            panel.background = element_blank(), axis.line = element_line(colour = "black"),
+            legend.position = "none")
+    if (input$radio_comparison == 1) {
+      ggplotly(gg + geom_bar(aes(fill = factor(`Rating`))))
+    } else if (input$radio_comparison == 2) {
+      ggplotly(gg + geom_bar(aes(fill = factor(`Athletic Type`))))
+    } else if (input$radio_comparison == 3) {
+      ggplotly(gg + geom_bar(aes(fill = factor(`Age Range`))))
+    } else if (input$radio_comparison == 4) {
+      ggplotly(gg + geom_bar(aes(fill = factor(`Body Type`))))
+    } else if (input$radio_comparison == 5) {
+      ggplotly(gg + geom_bar(aes(fill = factor(`Fit`))))
+    }
+  })
   
   
+  ## Sentiment Analysis
+  ll_sa_product1 = reactive({
+    lululemon_reviews %>% filter(., `Product Name` == input$sa_product1)
+  })
+  ll_sa_product2 = reactive({
+    lululemon_reviews %>% filter(., `Product Name` == input$sa_product2)
+  })
+  output$sa_product1_subtitle = renderText({
+    print(input$sa_product1)
+  })
+  output$avg_polarity_product1 = renderValueBox({
+    valueBox(subtitle = "Average Polarity",
+             value = round(ll_sa_product1() %>% select(., `Content Polarity`) %>% pull %>% mean, digits = 2),
+             icon = icon("dumbbell"))
+  })
+  
+  output$sa_review_product1 = renderPlotly({
+    if (input$sa_radio == 1) {
+      ggplotly(ggplot(ll_sa_product1(), aes(x= factor(`Rating`), y = `Content Polarity`)) + 
+                 xlab("Rating (out of 5)") + ylab("Review Polarity") + 
+                 geom_boxplot(aes(fill = factor(Rating))) + scale_fill_brewer(palette = "Reds") +
+                 theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                       panel.background = element_blank(), axis.line = element_line(colour = "black"),
+                       legend.position = "none"))
+    }
+    else if (input$sa_radio == 2) {
+      ggplotly(ggplot(ll_sa_product1(), aes(x= factor(`Rating`), y = `Content Subjectivity`)) + 
+                 xlab("Rating (out of 5)") + ylab("Review Subjectivity") + 
+                 geom_boxplot(aes(fill = factor(Rating))) + scale_fill_brewer(palette = "Reds") +
+                 theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                       panel.background = element_blank(), axis.line = element_line(colour = "black"),
+                       legend.position = "none"))
+    }
+    
+  })
+  
+  output$sa_product2_subtitle = renderText({
+    print(input$sa_product2)
+  })
+  output$avg_polarity_product2 = renderValueBox({
+    valueBox(subtitle = "Average Polarity",
+             value = round(ll_sa_product2() %>% select(., `Content Polarity`) %>% pull %>% mean, digits = 2),
+             icon = icon("dumbbell"))
+  })
+  output$sa_review_product2 = renderPlotly({
+    if (input$sa_radio == 1) {
+      ggplotly(ggplot(ll_sa_product2(), aes(x= factor(`Rating`), y = `Content Polarity`)) + 
+                 xlab("Rating (out of 5)") + ylab("Review Polarity") + 
+                 geom_boxplot(aes(fill = factor(Rating))) + scale_fill_brewer(palette = "Reds") +
+                 theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                       panel.background = element_blank(), axis.line = element_line(colour = "black"),
+                       legend.position = "none"))
+    }
+    else if (input$sa_radio == 2) {
+      ggplotly(ggplot(ll_sa_product2(), aes(x= factor(`Rating`), y = `Content Subjectivity`)) + 
+                 xlab("Rating (out of 5)") + ylab("Review Subjectivity") + 
+                 geom_boxplot(aes(fill = factor(Rating))) + scale_fill_brewer(palette = "Reds") +
+                 theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                       panel.background = element_blank(), axis.line = element_line(colour = "black"),
+                       legend.position = "none"))
+    }
+    
+  })
   
   
+  ## Word Cloud
+  wordcloud_rep = repeatable(wordcloud)
   
+  output$wordcloud_product1_subtitle = renderText({
+    print(paste("Wordcloud for ",input$wc_product1))
+  })
+  output$wordcloud_product1 = renderPlot({
+    wordcloud_rep(words = names(getTermMatrix(input$wc_product1)), freq = getTermMatrix(input$wc_product1), scale=c(4,0.5),
+                  min.freq = input$freq, max.words=input$max,
+                  colors=brewer.pal(5, "Dark2"))
+  })
+  output$wc_hist1 = renderPlotly({
+    wc_hist = (data.frame("Word" = names(getTermMatrix(input$wc_product1)), "Frequency" = getTermMatrix(input$wc_product1)))[1:10,]
+    wc_hist$Word = factor(wc_hist$Word, levels = wc_hist$Word[order(-wc_hist$Frequency)])
+    ggplot(wc_hist, aes(x = Word, y = Frequency)) + geom_col(aes(fill = Word)) + 
+      #scale_fill_brewer(palette = "Reds") +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            panel.background = element_blank(), axis.line = element_line(colour = "black"),
+            legend.position = "none") +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  })
+  output$wordcloud_table1 = renderDataTable({
+    DT::datatable(cbind("Word" = names(getTermMatrix(input$wc_product1)), "Frequency" = getTermMatrix(input$wc_product1)), rownames = F, options = list(pageLength = 5))
+  })
   
-  
+  output$wordcloud_product2_subtitle = renderText({
+    print(paste("Wordcloud for ",input$wc_product2))
+  })
+  output$wordcloud_product2 = renderPlot({
+    wordcloud_rep(words = names(getTermMatrix(input$wc_product2)), freq = getTermMatrix(input$wc_product2), scale=c(4,0.5),
+              min.freq = input$freq, max.words=input$max,
+              colors=brewer.pal(5, "Dark2"))
+  })
+  output$wc_hist2 = renderPlotly({
+    wc_hist = (data.frame("Word" = names(getTermMatrix(input$wc_product2)), "Frequency" = getTermMatrix(input$wc_product2)))[1:10,]
+    wc_hist$Word = factor(wc_hist$Word, levels = wc_hist$Word[order(-wc_hist$Frequency)])
+    ggplot(wc_hist, aes(x = Word, y = Frequency)) + geom_col(aes(fill = Word)) + 
+      #scale_fill_brewer(palette = "Reds") +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            panel.background = element_blank(), axis.line = element_line(colour = "black"),
+            legend.position = "none") +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  })
+  output$wordcloud_table2 = renderDataTable({
+    DT::datatable(cbind("Word" = names(getTermMatrix(input$wc_product2)), "Frequency" = getTermMatrix(input$wc_product2)), rownames = F, options = list(pageLength = 5))
+  })
   
   
   
@@ -102,11 +243,11 @@ shinyServer(function(input, output) {
   output$avg_rating_athletic_type1 = renderValueBox({
     valueBox(subtitle = "Average Rating",
              value = round(ll_athletic_type1() %>% select(., `Rating`) %>% pull %>% mean, digits = 2),
-             icon = icon("dumbbell"))
+             icon = icon("fas fa-star"))
   })
   output$total_reviews_athletic_type1 = renderValueBox({
     valueBox(subtitle = "Total Number of Reviews",
-             value = round(ll_athletic_type1() %>% select(., `Rating`) %>% pull %>% length),
+             value = prettyNum(ll_athletic_type1() %>% select(., `Rating`) %>% pull %>% length, big.mark = ","),
              icon = icon("dumbbell"))
   })
   output$athletic_type1_ratings_plot = renderPlotly({
@@ -116,9 +257,6 @@ shinyServer(function(input, output) {
                theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                      panel.background = element_blank(), axis.line = element_line(colour = "black"),
                      legend.position = "none"))
-    #scale_colour_brewer(palette = "Reds")
-    
-    #scale_fill_brewer(palette = "Reds")
   })
   
   output$athletic_type2_subtitle = renderText({
@@ -127,11 +265,11 @@ shinyServer(function(input, output) {
   output$avg_rating_athletic_type2 = renderValueBox({
     valueBox(subtitle = "Average Rating",
              value = round(ll_athletic_type2() %>% select(., `Rating`) %>% pull %>% mean, digits = 2),
-             icon = icon("dumbbell"))
+             icon = icon("fas fa-star"))
   })
   output$total_reviews_athletic_type2 = renderValueBox({
     valueBox(subtitle = "Total Number of Reviews",
-             value = round(ll_athletic_type2() %>% select(., `Rating`) %>% pull %>% length),
+             value = prettyNum(ll_athletic_type2() %>% select(., `Rating`) %>% pull %>% length, big.mark=","),
              icon = icon("dumbbell"))
   })
   
@@ -159,11 +297,11 @@ shinyServer(function(input, output) {
   output$avg_rating_age_range1 = renderValueBox({
     valueBox(subtitle = "Average Rating",
              value = round(ll_age_range1() %>% select(., `Rating`) %>% pull %>% mean, digits = 2),
-             icon = icon("dumbbell"))
+             icon = icon("fas fa-star"))
   })
   output$total_reviews_age_range1 = renderValueBox({
     valueBox(subtitle = "Total Number of Reviews",
-             value = round(ll_age_range1() %>% select(., `Rating`) %>% pull %>% length),
+             value = prettyNum(ll_age_range1() %>% select(., `Rating`) %>% pull %>% length, big.mark = ","),
              icon = icon("dumbbell"))
   })
   output$age_range1_ratings_plot = renderPlotly({
@@ -181,11 +319,11 @@ shinyServer(function(input, output) {
   output$avg_rating_age_range2 = renderValueBox({
     valueBox(subtitle = "Average Rating",
              value = round(ll_age_range2() %>% select(., `Rating`) %>% pull %>% mean, digits = 2),
-             icon = icon("dumbbell"))
+             icon = icon("fas fa-star"))
   })
   output$total_reviews_age_range2 = renderValueBox({
     valueBox(subtitle = "Total Number of Reviews",
-             value = round(ll_age_range2() %>% select(., `Rating`) %>% pull %>% length),
+             value = prettyNum(ll_age_range2() %>% select(., `Rating`) %>% pull %>% length, big.mark = ","),
              icon = icon("dumbbell"))
   })
   
@@ -197,17 +335,6 @@ shinyServer(function(input, output) {
                      panel.background = element_blank(), axis.line = element_line(colour = "black"),
                      legend.position = "none"))
   })
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   
   
   ## Body Type
@@ -225,11 +352,11 @@ shinyServer(function(input, output) {
   output$avg_rating_body_type1 = renderValueBox({
     valueBox(subtitle = "Average Rating",
              value = round(ll_body_type1() %>% select(., `Rating`) %>% pull %>% mean, digits = 2),
-             icon = icon("dumbbell"))
+             icon = icon("fas fa-star"))
   })
   output$total_reviews_body_type1 = renderValueBox({
     valueBox(subtitle = "Total Number of Reviews",
-             value = round(ll_body_type1() %>% select(., `Rating`) %>% pull %>% length),
+             value = prettyNum(ll_body_type1() %>% select(., `Rating`) %>% pull %>% length, big.mark = ","),
              icon = icon("dumbbell"))
   })
   output$body_type1_ratings_plot = renderPlotly({
@@ -247,11 +374,11 @@ shinyServer(function(input, output) {
   output$avg_rating_body_type2 = renderValueBox({
     valueBox(subtitle = "Average Rating",
              value = round(ll_body_type2() %>% select(., `Rating`) %>% pull %>% mean, digits = 2),
-             icon = icon("dumbbell"))
+             icon = icon("fas fa-star"))
   })
   output$total_reviews_body_type2 = renderValueBox({
     valueBox(subtitle = "Total Number of Reviews",
-             value = round(ll_body_type2() %>% select(., `Rating`) %>% pull %>% length),
+             value = prettyNum(ll_body_type2() %>% select(., `Rating`) %>% pull %>% length, big.mark = ","),
              icon = icon("dumbbell"))
   })
   
@@ -281,11 +408,11 @@ shinyServer(function(input, output) {
   output$avg_rating_fit1 = renderValueBox({
     valueBox(subtitle = "Average Rating",
              value = round(ll_fit1() %>% select(., `Rating`) %>% pull %>% mean, digits = 2),
-             icon = icon("dumbbell"))
+             icon = icon("fas fa-star"))
   })
   output$total_reviews_fit1 = renderValueBox({
     valueBox(subtitle = "Total Number of Reviews",
-             value = round(ll_fit1() %>% select(., `Rating`) %>% pull %>% length),
+             value = prettyNum(ll_fit1() %>% select(., `Rating`) %>% pull %>% length, big.mark = ","),
              icon = icon("dumbbell"))
   })
   output$fit1_ratings_plot = renderPlotly({
@@ -303,11 +430,11 @@ shinyServer(function(input, output) {
   output$avg_rating_fit2 = renderValueBox({
     valueBox(subtitle = "Average Rating",
              value = round(ll_fit2() %>% select(., `Rating`) %>% pull %>% mean, digits = 2),
-             icon = icon("dumbbell"))
+             icon = icon("fas fa-star"))
   })
   output$total_reviews_fit2 = renderValueBox({
     valueBox(subtitle = "Total Number of Reviews",
-             value = round(ll_fit2() %>% select(., `Rating`) %>% pull %>% length),
+             value = prettyNum(ll_fit2() %>% select(., `Rating`) %>% pull %>% length, big.mark = ","),
              icon = icon("dumbbell"))
   })
   
@@ -321,49 +448,90 @@ shinyServer(function(input, output) {
   })
 
   
+  ## Response rate
+  ll_response1 = reactive({
+    lululemon_reviews %>% filter(., `Product Name` == input$response1)
+  })
+  ll_response2 = reactive({
+    lululemon_reviews %>% filter(., `Product Name` == input$response2)
+  })
   
-  
-  
-  ll_sa_product1 = reactive({
-    lululemon_reviews %>% filter(., `Product Name` == input$sa_product1)
+  output$response1_subtitle = renderText({
+    print(paste("Responses for ", input$response1))
   })
-  ll_sa_product2 = reactive({
-    lululemon_reviews %>% filter(., `Product Name` == input$sa_product2)
+  output$rr_total_reviews1 = renderValueBox({
+    valueBox(subtitle = "Total Number of Reviews",
+             value = prettyNum(ll_response1() %>% select(., "Content") %>% nrow, big.mark = ","),
+             icon = icon("fas fa-star"))
   })
-  output$polarity_product1_subtitle = renderText({
-    print(input$sa_product1)
+  output$number_responses1 = renderValueBox({
+    valueBox(subtitle = "Number of responses",
+             value = prettyNum(ll_response1() %>% filter(., `lululemon response` != "") %>% nrow, big.mark = ","),
+             icon = icon("fas fa-star"))
   })
-  output$avg_polarity_product1 = renderValueBox({
-    valueBox(subtitle = "Average Polarity",
-             value = round(ll_sa_product1() %>% select(., `Content Polarity`) %>% pull %>% mean, digits = 2),
-             icon = icon("dumbbell"))
+  output$response_rate1 = renderValueBox({
+    valueBox(subtitle = "Response rate",
+             value = paste0(round(((ll_response1() %>% filter(., `lululemon response` != "") %>% nrow)/(ll_response1() %>% select(., "Content") %>% nrow))*100, digits = 2), "%"),
+             icon = icon("fas fa-star"))
   })
-  output$polarity_review_product1 = renderPlotly({
-    ggplotly(ggplot(ll_sa_product1(), aes(x= factor(`Rating`), y = `Content Polarity`)) + 
-               xlab("Rating (out of 5)") + ylab("Review Polarity") + 
-               geom_boxplot(aes(fill = factor(Rating))) + scale_fill_brewer(palette = "Reds") +
-               theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                     panel.background = element_blank(), axis.line = element_line(colour = "black"),
-                     legend.position = "none"))
+  output$avg_response_time1 = renderValueBox({
+    dates1 = ll_response1() %>% filter(., `lululemon response` != "") %>% select(., `Date`, `lululemon response date`)
+    valueBox(subtitle = "Average response time (days)",
+             value = round(mean(dates1$`lululemon response date` - dates1$`Date`), digits = 2),
+             icon = icon("fas fa-star"))
+  })
+  output$response_plot1 = renderPlotly({
+    gg = ggplot(ll_response1(), aes(x = `Rating`)) + 
+      xlab("Rating (out of 5)") + scale_fill_brewer(palette = "Reds") +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            panel.background = element_blank(), axis.line = element_line(colour = "black"),
+            legend.position = "none")
+    if (input$radio_response == 1){
+      ggplotly(gg + ylab("Number of reviews") + geom_bar(aes(fill = factor(Responded))))
+    } else if (input$radio_response == 2){
+      ggplotly(gg + ylab("Proportion of reviews") + geom_bar(aes(fill = factor(Responded)), position = "fill"))
+    }
   })
 
+  output$response2_subtitle = renderText({
+    print(paste("Responses for ", input$response2))
+  })
+  output$rr_total_reviews2 = renderValueBox({
+    valueBox(subtitle = "Total Number of Reviews",
+             value = prettyNum(ll_response2() %>% select(., "Content") %>% nrow, big.mark = ","),
+             icon = icon("fas fa-star"))
+  })
+  output$number_responses2 = renderValueBox({
+    valueBox(subtitle = "Number of responses",
+             value = prettyNum(ll_response2() %>% filter(., `lululemon response` != "") %>% nrow, big.mark = ","),
+             icon = icon("fas fa-star"))
+  })
+  output$response_rate2 = renderValueBox({
+    valueBox(subtitle = "Response rate",
+             value = paste0(round(((ll_response2() %>% filter(., `lululemon response` != "") %>% nrow)/(ll_response2() %>% select(., "Content") %>% nrow))*100, digits = 2), "%"),
+             icon = icon("fas fa-star"))
+  })
+  output$avg_response_time2 = renderValueBox({
+    dates2 = ll_response2() %>% filter(., `lululemon response` != "") %>% select(., `Date`, `lululemon response date`)
+    valueBox(subtitle = "Average response time (days)",
+             value = round(mean(dates2$`lululemon response date` - dates2$`Date`), digits = 2),
+             icon = icon("fas fa-star"))
+  })
+  output$response_plot2 = renderPlotly({
+    gg = ggplot(ll_response2(), aes(x = `Rating`)) + 
+      xlab("Rating (out of 5)") + scale_fill_brewer(palette = "Reds") +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            panel.background = element_blank(), axis.line = element_line(colour = "black"),
+            legend.position = "none")
+    if (input$radio_response == 1){
+      ggplotly(gg + ylab("Number of reviews") + geom_bar(aes(fill = factor(Responded))))
+    } else if (input$radio_response == 2){
+      ggplotly(gg + ylab("Proportion of reviews") + geom_bar(aes(fill = factor(Responded)), position = "fill"))
+    }
+  })
   
-  output$polarity_product2_subtitle = renderText({
-    print(input$sa_product2)
+  output$lulu_link = renderUI({
+    HTML(paste("The webpage scraped can be found", a("here", class = "web", href = "https://shop.lululemon.com/c/women-pants/_/N-1z109yvZ7yh")))
   })
-  output$avg_polarity_product2 = renderValueBox({
-    valueBox(subtitle = "Average Polarity",
-             value = round(ll_sa_product2() %>% select(., `Content Polarity`) %>% pull %>% mean, digits = 2),
-             icon = icon("dumbbell"))
-  })
-  output$polarity_review_product2 = renderPlotly({
-    ggplotly(ggplot(ll_sa_product2(), aes(x= factor(`Rating`), y = `Content Polarity`)) + 
-               xlab("Rating (out of 5)") + ylab("Review Polarity") + 
-               geom_boxplot(aes(fill = factor(Rating))) + scale_fill_brewer(palette = "Reds") +
-               theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                     panel.background = element_blank(), axis.line = element_line(colour = "black"),
-                     legend.position = "none"))
-  })
-  
   
 })

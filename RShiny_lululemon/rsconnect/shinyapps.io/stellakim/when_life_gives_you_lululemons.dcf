@@ -5,9 +5,9 @@ account: stellakim
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 709563
-bundleId: 1870805
+bundleId: 1874630
 url: https://stellakim.shinyapps.io/when_life_gives_you_lululemons/
-when: 1549947207.74956
+when: 1550086040.69076
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: data/merged_reviews.csv|www/.DS_Store
+ignoredFiles: data/merged_reviews.csv|www/.DS_Store|www/Kim, Stella_180508_06_1200x800.jpg
