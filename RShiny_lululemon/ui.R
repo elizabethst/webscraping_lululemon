@@ -1,5 +1,3 @@
-#https://github.com/NLMichaud/WeeklyCDCPlot/blob/master/ui.R
-
 shinyUI(fluidPage(theme = shinytheme("journal"),
 #  shinythemes::themeSelector(),
   navbarPage("When Life Gives You (lulu)lemons",
@@ -26,7 +24,6 @@ shinyUI(fluidPage(theme = shinytheme("journal"),
                         )
                       ),
              navbarMenu("Product Comparisons",
-#                        tabPanel(tagList(icon("fas fa-star"), "Rating breakdown"),
                         tabPanel("Rating breakdown",
                                  sidebarLayout(
                                    sidebarPanel(
@@ -212,12 +209,6 @@ shinyUI(fluidPage(theme = shinytheme("journal"),
                                                   label = "Fit 2",
                                                   choices = fit_choices,
                                                   selected = "N/A")
-                                   # ,
-                                   # radioButtons(inputId = "radio_comparison",
-                                   #              label = "",
-                                   #              choices = list("Overview" = 1, "Yearly" = 2, "Monthly" = 3, "Daily" = 4),
-                                   #              selected = 1,
-                                   #              inline = TRUE)
                                  ),
                                  mainPanel(
                                    column(6, 
@@ -274,15 +265,11 @@ shinyUI(fluidPage(theme = shinytheme("journal"),
                         )
                       )),
              tabPanel("References",
-                      htmlOutput("lulu_link")
+                      htmlOutput("references")
                       ),
              tabPanel("About Me",
-                      sidebarLayout(
-                        sidebarPanel(
-                          #img(src="Kim, Stella_180508_06_1200x800.jpg")
-                        ),
-                        mainPanel()
-                      )),
+                      htmlOutput("contact")
+                      ),
              responsive = TRUE)
   
 ))

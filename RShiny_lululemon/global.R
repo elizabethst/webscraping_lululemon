@@ -12,22 +12,16 @@ library(tm)
 library(memoise)
 library(DT)
 
-#setwd("~/Documents/NYC Data Science Academy/RShiny_lululemon/")
 lululemon_reviews = fread("./data/merged_with_SA_reviews.csv")
 lululemon_reviews$`Product Name` = str_remove(lululemon_reviews$`Product Name`, "\"")
 lululemon_reviews$`Date` = as_date(lululemon_reviews$`Date`)
 lululemon_reviews$`lululemon response date` = as_date(lululemon_reviews$`lululemon response date`)
 lululemon_reviews = lululemon_reviews %>% mutate(., "Responded" = ifelse(`lululemon response` != "", "Yes", "No"))
 
-
-
 lululemon_reviews$`Athletic Type` = sub("^$", "N/A", lululemon_reviews$`Athletic Type`)
 lululemon_reviews$`Age Range` = sub("^$", "N/A", lululemon_reviews$`Age Range`)
 lululemon_reviews$`Body Type` = sub("^$", "N/A", lululemon_reviews$`Body Type`)
 lululemon_reviews$`Fit` = sub("^$", "N/A", lululemon_reviews$`Fit`)
-
-
-
 
 product_choices = lululemon_reviews %>% select(., `Product Name`) %>% unique() %>% pull
 athletic_type_choices = lululemon_reviews %>% select(., `Athletic Type`) %>% unique() %>% pull
@@ -39,43 +33,20 @@ body_type_choices = body_type_choices[c(1:5,7,6)]
 fit_choices = lululemon_reviews %>% select(., `Fit`) %>% unique() %>% pull
 fit_choices = fit_choices[c(2:8,1)]
 
-
-
 # Wordcloud
 getTermMatrix <- memoise(function(product) {
-  # Careful not to let just any name slip in here; a
-  # malicious user could manipulate this value.
   if (!(product %in% product_choices))
     stop("Unknown product")
-
   myCorpus = Corpus(VectorSource(lululemon_reviews %>% filter(., `Product Name` == product) %>% select(., "Content") %>% pull))
-
   myDTM = TermDocumentMatrix(myCorpus,
                              control = list(minWordLength = 1))
-
   m = as.matrix(myDTM)
-
   sort(rowSums(m), decreasing = TRUE)
 })
-
-
 
 # Sentiment analysis
 #https://www.quora.com/What-is-polarity-and-subjectivity-in-sentiment-analysis
 
 
-
-
-
-
-
 # lululemon_reviews %>% group_by(., `Name`) %>% summarise(n = n()) %>% arrange(desc(n))
-# should do a barplot of users who post more than one review!
-
-
-
-
-
-
-
-
+# should do a barplot of users who post more than one review!\

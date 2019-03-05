@@ -34,9 +34,6 @@ shinyServer(function(input, output) {
     
   })
   
-
-  
-  
   ### Product Comparisons
   ## Ratings
   ll_product1 = reactive({
@@ -173,9 +170,7 @@ shinyServer(function(input, output) {
                        panel.background = element_blank(), axis.line = element_line(colour = "black"),
                        legend.position = "none"))
     }
-    
   })
-  
   
   ## Word Cloud
   wordcloud_rep = repeatable(wordcloud)
@@ -223,12 +218,7 @@ shinyServer(function(input, output) {
   output$wordcloud_table2 = renderDataTable({
     DT::datatable(cbind("Word" = names(getTermMatrix(input$wc_product2)), "Frequency" = getTermMatrix(input$wc_product2)), rownames = F, options = list(pageLength = 5))
   })
-  
-  
-  
-  
-  
-  
+
 ############ CUSTOMER PROFILE ##################
   ## Athletic Type
   ll_athletic_type1 = reactive({
@@ -282,7 +272,6 @@ shinyServer(function(input, output) {
                      legend.position = "none"))
   })
 
-  
   ## Age Range
   ll_age_range1 = reactive({
     lululemon_reviews %>% filter(., `Age Range` == input$age_range1)
@@ -290,7 +279,6 @@ shinyServer(function(input, output) {
   ll_age_range2 = reactive({
     lululemon_reviews %>% filter(., `Age Range` == input$age_range2)
   })
-  
   output$age_range1_subtitle = renderText({
     print(input$age_range1)
   })
@@ -312,7 +300,6 @@ shinyServer(function(input, output) {
                      panel.background = element_blank(), axis.line = element_line(colour = "black"),
                      legend.position = "none"))
   })
-  
   output$age_range2_subtitle = renderText({
     print(input$age_range2)
   })
@@ -336,7 +323,6 @@ shinyServer(function(input, output) {
                      legend.position = "none"))
   })
   
-  
   ## Body Type
   ll_body_type1 = reactive({
     lululemon_reviews %>% filter(., `Body Type` == input$body_type1)
@@ -344,8 +330,6 @@ shinyServer(function(input, output) {
   ll_body_type2 = reactive({
     lululemon_reviews %>% filter(., `Body Type` == input$body_type2)
   })
-  
-  
   output$body_type1_subtitle = renderText({
     print(input$body_type1)
   })
@@ -367,7 +351,6 @@ shinyServer(function(input, output) {
                      panel.background = element_blank(), axis.line = element_line(colour = "black"),
                      legend.position = "none"))
   })
-  
   output$body_type2_subtitle = renderText({
     print(input$body_type2)
   })
@@ -381,7 +364,6 @@ shinyServer(function(input, output) {
              value = prettyNum(ll_body_type2() %>% select(., `Rating`) %>% pull %>% length, big.mark = ","),
              icon = icon("dumbbell"))
   })
-  
   output$body_type2_ratings_plot = renderPlotly({
     ggplotly(ggplot(ll_body_type2(), aes(x = `Rating`)) + 
                xlab("Rating (out of 5)") + ylab("Number of reviews") + 
@@ -390,9 +372,6 @@ shinyServer(function(input, output) {
                      panel.background = element_blank(), axis.line = element_line(colour = "black"),
                      legend.position = "none"))
   })
-  
-  
-  
   
   ## Fit Type
   ll_fit1 = reactive({
@@ -446,7 +425,6 @@ shinyServer(function(input, output) {
                      panel.background = element_blank(), axis.line = element_line(colour = "black"),
                      legend.position = "none"))
   })
-
   
   ## Response rate
   ll_response1 = reactive({
@@ -530,8 +508,22 @@ shinyServer(function(input, output) {
     }
   })
   
-  output$lulu_link = renderUI({
-    HTML(paste("The webpage scraped can be found", a("here", class = "web", href = "https://shop.lululemon.com/c/women-pants/_/N-1z109yvZ7yh")))
+  output$references = renderUI({
+    HTML(paste("Founded in Vancouver, Canada in 1998, <a href='https://shop.lululemon.com/'>lululemon athletica</a> \
+                is a technical athletic apparel company for yoga, running, training and most other sweaty pursuits. <br><br> \
+               The webpage scraped can be found <a href='https://shop.lululemon.com/c/women-pants/_/N-1z109yvZ7yh'>here</a>."))
+  })
+  
+  output$contact = renderUI({
+    HTML(paste("Stella Kim is a data scientist with a passion for data analytics, visualization,\
+               machine learning, statistical methodology, and programming. Primarily interested \
+               in helping businesses make data-driven, customer-centric decisions. <br><br>\
+               
+               <b>Contact Information</b>:<br>
+               Phone: (516) 510-3002<br>
+               Email: <a href = 'mailto:stellahkim93@gmail.com'>stellahkim93@gmail.com</a><br>
+               <a href = 'https://github.com/stellahkim93'>GitHub</a><br>
+               <a href = 'www.linkedin.com/in/stellahkim93'>LinkedIn</a><br>"))
   })
   
 })
