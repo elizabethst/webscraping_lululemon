@@ -1,11 +1,3 @@
-# testing on https://shop.lululemon.com/p/women-pants/Align-Pant-2/_/prod2020012?color=35552
-# no reviews on this page: https://shop.lululemon.com/p/women-pants/Fast--Free-Tight-Tall-Non-Reflective-31/_/prod9270601?color=31382
-# 4 pages of reviews: https://shop.lululemon.com/p/women-pants/Wunder-Under-HR-Tight-Brush/_/prod8810020?color=1966
-
-
-
-# this link keeps breaking: https://shop.lululemon.com/p/women-pants/To-The-Beat-Tight-24/_/prod9200527?color=0001
-
 from selenium import webdriver
 import time
 import csv
@@ -27,16 +19,6 @@ product_urls = product_urls[1:21]
 # Writing CSV file
 product_file = open('lululemon_product_info.csv', 'r+', encoding= 'utf-8')
 product_writer = csv.writer(product_file)
-#writer.writerow()
-
-
-# testing in a few sites with a few pages of reviews
-#product_urls = [['https://shop.lululemon.com/p/women-pants/Train-Times-7-8-Pant/_/prod8555523?color=26083'],
-#['https://shop.lululemon.com/p/women-pants/Wunder-Under-HR-Tight-Brush/_/prod8810020?color=1966'],
-#['https://shop.lululemon.com/p/women-pants/Fast--Free-Tight-Tall-Non-Reflective-31/_/prod9270601?color=31382'],
-#['https://shop.lululemon.com/p/women-pants/Zoned-In-Tight-27/_/prod9080164?color=0001']]
-
-
 
 # Web pages to scrape
 for product_url in product_urls:
@@ -46,16 +28,8 @@ for product_url in product_urls:
 	driver = webdriver.Chrome()
 	driver.get(product_url)
 
-	#product_image = product_info.find_element_by_xpath('//img[@class="default-image show-image swiper-slide swiper-slide-active"]')
-
-	# Finding review button to click to get to reviews
-	# I don't need a review button -- don't need to click anything to get to review. But keeping this in just in case!
-	#review_button = driver.find_element_by_xpath('//span[@class="reviews-count"]')
-	#review_button.click()
-
 	product_dict = {}
 	product_name = driver.find_element_by_xpath('.//h1[@class="pdp-title"]/div').text.replace("\n", " ")
-
 
 	# csv file for each product
 	filename = "./reviews/"+re.sub('[^a-zA-Z0-9]', '', product_name)+"_lululemon_review.csv"
@@ -90,7 +64,6 @@ for product_url in product_urls:
 	product_writer.writerow(product_dict.values())
 
 	index = 1
-	#while index <=1:
 	while True:
 		try:
 			page_number = index
@@ -128,7 +101,7 @@ for product_url in product_urls:
 						location = ""
 					try:
 						athletic_type = review.find_element_by_xpath('.//span[@class="BVRRValue BVRRContextDataValue BVRRContextDataValueActivity"]').text
-					except Exception as e: 
+					except Exception as e:
 						athletic_type = ""
 
 					try:
@@ -175,7 +148,7 @@ for product_url in product_urls:
 					LL_response_dict = {}
 					try:
 						LL_responses = review.find_elements_by_xpath('.//div[@class="BVRRReviewClientResponseContainer"]')
-						
+
 						for LL_response in LL_responses:
 							try:
 								LL_response_content = LL_response.find_element_by_xpath('.//div[@class="BVRRReviewClientResponseText"]').text
@@ -232,15 +205,13 @@ for product_url in product_urls:
 			except Exception as e:
 				print(e)
 				break
-			# temporary, for each URL. take this out after making sure each URl works
 				driver.close()
 
-		# What happens when the 
 		except Exception as e:
 			print(e)
 			print("\nDone scraping {}\n".format(product_name))
 			driver.close()
-			review_file.close() # close file that you opened
+			review_file.close()
 			product_file.close()
 			break
 	driver.close()
@@ -248,17 +219,3 @@ for product_url in product_urls:
 review_file.close()
 product_file.close()
 print("\nDone scraping\n")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
