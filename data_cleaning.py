@@ -1,59 +1,37 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Feb  9 13:23:13 2019
-
-@author: stellakim
-"""
-
 import pandas as pd
 import numpy as np
-#import csv
 import re
 import ast
 import os
 import datetime as dt
 
-
-
 ###############################################################################
 ###################### Reviews scraped on 02/08/2019 ##########################
 ###############################################################################
 
-
-###############################################################################
 # Reading in product information
 product_colnames = ["Product Name", "URL", "List Price", "Sale Price", "Colors", "Average Rating"]
 product_info = pd.read_csv('./reviews/lululemon_product_info.csv', names = product_colnames)
 
-
 ###############################################################################
 # There are some missing reviews in the first file, for Align Pant II, but I
 # scraped them in an additional file.
-review_colnames =  ["Product Name", "URL", "Average Rating", "Page Number", 
-                    "Title", "Content", "Rating", "Name", "Location", "Athletic Type", "Age Range", "Body Type", 
+review_colnames =  ["Product Name", "URL", "Average Rating", "Page Number",
+                    "Title", "Content", "Rating", "Name", "Location", "Athletic Type", "Age Range", "Body Type",
                     "Fit", "Likes", "Dislikes", "Date", "Helful Yes", "Helpful No", "lululemon Response"]
 align_reviews = pd.read_csv('./reviews/0.AlignPantII25_lululemon_review.csv', names = review_colnames)
 # Missing reviews for page 178 and 193.
 align_reviews[align_reviews['Rating'].isna()]['Page Number'].unique()
-
 align_missing = pd.read_csv('./reviews/41.AlignPantII25_lululemon_review.csv', names = review_colnames)
 missing_reviews = align_missing[(align_reviews['Page Number'] == 178) | (align_reviews['Page Number'] == 193)]
-
 align_reviews = align_reviews.drop(align_reviews[(align_reviews["Page Number"] == 178) | (align_reviews["Page Number"] == 193)].index)
-
 align_reviews = pd.concat([align_reviews, missing_reviews], axis = 0).sort_index()
-
 del (missing_reviews, align_missing)
-
 
 ###############################################################################
 # Creating data frame, will concatenate all other data frames
 reviews = align_reviews
 del align_reviews
-
-#reviews.dtypes
-
 
 # Splitting lululemon Response into content and date
 reviews["lululemon Response"] = reviews["lululemon Response"].map(lambda dict: ast.literal_eval(dict))
@@ -64,7 +42,6 @@ reviews.rename(columns={'LL_response_content':'lululemon response', 'LL_response
 # Dropping URL and lululemon Response
 reviews = reviews.drop(columns = ["URL", "lululemon Response"])
 
-# https://stackabuse.com/converting-strings-to-datetime-in-python/
 # Converting dates
 reviews['Date'] = reviews['Date'].map(lambda x: dt.datetime.strptime(x, '%Y-%m-%d').date())
 reviews['lululemon response date'] = reviews['lululemon response date'].map(lambda x: dt.datetime.strptime(x, '%B %d, %Y').date(), na_action = 'ignore')
@@ -88,8 +65,6 @@ reviews['Content'] = reviews['Content'].str.replace("This guest did not provide 
 
 #reviews['Location'].fillna('')
 
-
-
 # I realized that while if there was an item for sale at list price and sale
 # price (i.e. some colors on sale), they were listed separately, but the
 # reviews were linked.
@@ -99,10 +74,10 @@ reviews['Content'] = reviews['Content'].str.replace("This guest did not provide 
 # https://arcpy.wordpress.com/2012/05/11/sorting-alphanumeric-strings-in-python/
 def sorted_nicely( l ):
     """ Sorts the given iterable in the way that is expected.
- 
+
     Required arguments:
     l -- The iterable to be sorted.
- 
+
     """
     convert = lambda text: int(text) if text.isdigit() else text
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
@@ -152,63 +127,3 @@ for file in filenames:
 del (file, filenames, tmp, col, product_colnames, review_colnames)
 
 #reviews.to_csv('./reviews/merged_reviews.csv', index = False)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-################################################################################
-## Reading in reviews
-#review_colnames =  ["Product Name", "URL", "Average Rating", "Page Number", 
-#                    "Title", "Content", "Rating", "Name", "Location", "Athletic Type", "Age Range", "Body Type", 
-#                    "Fit", "Likes", "Dislikes", "Date", "Helful Yes", "Helpful No", "lululemon Response"]
-#reviews = pd.read_csv('./reviews/14.SpeedUpTightFullOnLuxtremeBrushed28_lululemon_review.csv', names = review_colnames)
-#
-#
-################################################################################
-## Splitting lululemon Response into content and date
-#reviews["lululemon Response"] = reviews["lululemon Response"].map(lambda dict: ast.literal_eval(dict))
-#reviews = reviews.join(pd.DataFrame(reviews['lululemon Response'].to_dict()).T)
-#reviews['LL_response_date']
-#reviews.rename(columns={'LL_response_content':'lululemon response', 'LL_response_date':'lululemon response date'}, inplace=True)
-#
-#
-################################################################################
-## Dropping URL and lululemon Response
-#reviews = reviews.drop(columns = ["URL", "lululemon Response"])
-#
-#
-################################################################################
-## Removing "out of 5" and converting to float from columns containing ratings
-#rating_cols = [col for col in reviews.columns if "Rating" in col]
-#for col in rating_cols:
-#    reviews[col] = reviews[col].map(lambda x: float(x.replace(" out of 5", "")))
-#del rating_cols
-#
-#
-################################################################################
-## Cleaning up Location column.
-#reviews['Location'] = reviews['Location'].str.replace(", USA", "")
-#reviews['Location'] = reviews['Location'].str.replace("\d", "", regex = True)
-#
-#
-#
-### Replacing empty dictionaries in 'lululemon Response' with ""
-##reviews['lululemon Response'] = reviews['lululemon Response'].map(lambda x: x.replace("{}", ""))
-#
-#
-## Replacing empty strings with np.nan for the entire df
-##reviews = reviews.replace("", np.nan)

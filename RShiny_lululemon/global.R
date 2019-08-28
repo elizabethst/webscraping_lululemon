@@ -43,10 +43,3 @@ getTermMatrix <- memoise(function(product) {
   m = as.matrix(myDTM)
   sort(rowSums(m), decreasing = TRUE)
 })
-
-# Sentiment analysis
-#https://www.quora.com/What-is-polarity-and-subjectivity-in-sentiment-analysis
-
-
-# lululemon_reviews %>% group_by(., `Name`) %>% summarise(n = n()) %>% arrange(desc(n))
-# should do a barplot of users who post more than one review!\

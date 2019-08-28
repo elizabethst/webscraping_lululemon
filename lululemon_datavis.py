@@ -1,31 +1,20 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Feb 10 13:19:20 2019
-
-@author: stellakim
-"""
 import pandas as pd
 import numpy as np
 import csv
 import re
 import nltk
-
 from nltk.tokenize import word_tokenize ## tokenization
 from textblob import TextBlob ## for sentiment analysis
 from wordcloud import WordCloud
+
 ###############################################################################
 reviews = pd.read_csv('./reviews/merged_reviews.csv')
-
-
-reviews.dtypes
 sum(reviews['Content'] == '')/reviews.shape[0]
 # 0.2% of reviews did not contain any text
 
 ## Filling NaNs with empty string (for removal later)
 reviews['Title'] = reviews['Title'].fillna('')
 reviews['Content'] = reviews['Content'].fillna('')
-
 
 ###############################################################################
 ################################PRE-PROCESSING#################################
@@ -45,33 +34,8 @@ reviews['Content'] = reviews['Content'].apply(lambda x: re.sub('[^\w\s]', '', x)
 from nltk.corpus import stopwords
 stop = stopwords.words('english')
 
-
 reviews['Title'] = reviews['Title'].apply(lambda x: " ".join(x for x in x.split() if x not in stop))
 reviews['Content'] = reviews['Content'].apply(lambda x: " ".join(x for x in x.split() if x not in stop))
-
-
-## Tokenization:
-
-
-
-
-
-## Word Cloud:
-wc = WordCloud(background_color="white", max_words=2000)
-wc.generate(' '.join(reviews['Content']))
-
-
-import matplotlib.pyplot as plt
-plt.imshow(wc, interpolation='bilinear')
-plt.axis("off")
-#plt.figure(figsize=(4, 3))
-#plt.axis("off")
-plt.show()
-
-
-
-
-
 
 ## Sentiment analysis:
 def sentiment_func(x):
@@ -83,5 +47,4 @@ def sentiment_func(x):
 
 reviews = reviews.apply(sentiment_func, axis = 1)
 
-reviews.to_csv('./reviews/merged_with_SA_reviews.csv', index = False) 
-    
+#reviews.to_csv('./reviews/merged_with_SA_reviews.csv', index = False)
